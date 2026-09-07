@@ -8,21 +8,33 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "ACHOVFX - VOICECHAT",
   description: "Video calling App",
-  // icons: {
-  //   icon: "/icons/logo.svg",
-  // },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="fa" dir="rtl">
+      <head>
+        {/* Persian Font - Vazirmatn */}
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+
       <ClerkProvider
         appearance={{
           layout: {
@@ -38,7 +50,12 @@ export default function RootLayout({
           },
         }}
       >
-        <body className={`${inter.className} bg-dark-2`}>
+        <body
+          className={`bg-dark-2`}
+          style={{
+            fontFamily: "Vazirmatn, sans-serif",
+          }}
+        >
           <Toaster />
           {children}
         </body>
