@@ -1,40 +1,91 @@
 'use client';
 
+import { useState } from 'react';
 import { useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
+import { useRouter } from 'next/navigation';
+import { LogOut, Loader2 } from 'lucide-react';
 
 import { Button } from './ui/button';
-import { useRouter } from 'next/navigation';
 
 const EndCallButton = () => {
-  const call = useCall();
-  const router = useRouter();
+const call = useCall();
+const router = useRouter();
 
-  if (!call)
-    throw new Error(
-      'useStreamCall must be used within a StreamCall component.',
-    );
+const [isEnding, setIsEnding] = useState(false);
 
-  // https://getstream.io/video/docs/react/guides/call-and-participant-state/#participant-state-3
-  const { useLocalParticipant } = useCallStateHooks();
-  const localParticipant = useLocalParticipant();
+if (!call) {
+throw new Error(
+'useStreamCall must be used within a StreamCall component.',
+);
+}
 
-  const isMeetingOwner =
-    localParticipant &&
-    call.state.createdBy &&
-    localParticipant.userId === call.state.createdBy.id;
+const { useLocalParticipant } = useCallStateHooks();
+const localParticipant = useLocalParticipant();
 
-  if (!isMeetingOwner) return null;
+const isMeetingOwner =
+localParticipant &&
+call.state.createdBy &&
+localParticipant.userId === call.state.createdBy.id;
 
-  const endCall = async () => {
-    await call.endCall();
-    router.push('/');
-  };
+if (!isMeetingOwner) return null;
 
-  return (
-    <Button onClick={endCall} className="bg-red-500">
-      End call for everyone
-    </Button>
-  );
+const endCall = async () => {
+if (isEnding) return;
+try {
+  setIsEnding(true);
+
+  await call.endCall();
+
+  router.push('/');
+} catch (error) {
+  console.error('End call error:', error);
+  setIsEnding(false);
+}
+
+};
+
+return ( <Button
+   type="button"
+   onClick={endCall}
+   disabled={isEnding}
+   title="پایان جلسه برای همه"
+   aria-label="پایان جلسه برای همه"
+   className="
+     group
+     flex h-11 items-center justify-center
+     gap-2
+     rounded-xl
+     border border-red-400/20
+     bg-red-500/10
+     px-3
+     text-red-400
+     transition-all duration-200
+     hover:border-red-400/30
+     hover:bg-red-500/20
+     hover:text-red-300
+     active:scale-[0.97]
+     disabled:cursor-not-allowed
+     disabled:opacity-60
+     lg:px-4
+   "
+ >
+{isEnding ? ( <Loader2
+       size={18}
+       className="animate-spin"
+     />
+) : ( <LogOut
+       size={18}
+       className="
+         transition-transform duration-200
+         group-hover:-translate-x-0.5
+       "
+     />
+)}
+  <span className="hidden text-xs font-bold lg:block">
+    {isEnding ? 'در حال پایان...' : 'پایان جلسه برای همه'}
+  </span>
+</Button>
+);
 };
 
 export default EndCallButton;
